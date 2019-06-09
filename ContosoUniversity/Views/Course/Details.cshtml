@@ -26,6 +26,24 @@
             @Html.DisplayFor(model => model.Credits)
         </dd>
 
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>Student</th>
+                    <th>Grade</th>
+                </tr>
+                @foreach (var item in Model.Enrollments)
+                {
+                <tr>
+                    <td>@Html.DisplayFor(s=> item.Student.LastName), @Html.DisplayFor(s=> item.Student.FirstName)</td>
+                    <td>@Html.DisplayFor(s=> item.Grade)</td>
+                </tr>
+                }
+
+            </table>
+
+        </dd>
+
     </dl>
 </div>
 <p>
