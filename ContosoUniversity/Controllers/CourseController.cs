@@ -93,7 +93,7 @@ namespace ContosoUniversity.Controllers
 
             var courseToUpdate = db.Courses.Find(id);
 
-            if (TryUpdateModel(courseToUpdate,"", new string[] { "ID", "Title", "Credits" }))
+            if (TryUpdateModel(courseToUpdate, "", new string[] { "ID", "Title", "Credits" }))
             {
                 try
                 {
@@ -110,12 +110,18 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Course/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
+            }
+
             Course course = db.Courses.Find(id);
             if (course == null)
             {
@@ -127,11 +133,20 @@ namespace ContosoUniversity.Controllers
         // POST: Course/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
-            Course course = db.Courses.Find(id);
-            db.Courses.Remove(course);
-            db.SaveChanges();
+            try
+            {
+                Course course = db.Courses.Find(id);
+                db.Courses.Remove(course);
+                db.SaveChanges();
+            }
+            catch (DataException)
+            {
+
+                return RedirectToAction("Delete", "Course", new { id = id, saveChangesError = true });
+            }
+
             return RedirectToAction("Index");
         }
 
