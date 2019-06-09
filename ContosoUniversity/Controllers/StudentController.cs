@@ -34,7 +34,7 @@ namespace ContosoUniversity.Controllers
                     students = students.OrderBy(s => s.EnrollmentDate);
                     break;
                 case "date_desc":
-                    students = students.OrderBy(s => s.EnrollmentDate);
+                    students = students.OrderByDescending(s => s.EnrollmentDate);
                     break;
                 default:
                     students = students.OrderBy(s => s.LastName);
