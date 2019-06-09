@@ -1,7 +1,25 @@
-﻿@{
-    ViewBag.Title = "About";
-}
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
+﻿@model IEnumerable<ContosoUniversity.ViewModels.EnrollmentDateGroup>
 
-<p>Use this area to provide additional information.</p>
+@{
+    ViewBag.Title = "Student Body Statistics";
+}
+<h2>@ViewBag.Title</h2>
+
+
+    <table class="table table-hover">
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.EnrollmentDate)</th>
+            <th>@Html.DisplayNameFor(m => m.StudentCount)</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.EnrollmentDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.StudentCount)
+                </td>
+            </tr>
+        }
+    </table>
