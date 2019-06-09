@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
+using PagedList;
 
 namespace ContosoUniversity.Controllers
 {
@@ -16,10 +17,23 @@ namespace ContosoUniversity.Controllers
         private SchoolContext db = new SchoolContext();
 
         // GET: Course
-        public ActionResult Index(string sortOrder, string searchString)
+        public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
             ViewBag.TitleSort = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewBag.GradeSort = sortOrder == "Credits" ? "credits_desc" : "Credits";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
 
             var courses = from c in db.Courses
                           select c;
@@ -46,7 +60,15 @@ namespace ContosoUniversity.Controllers
                     break;
             }
 
-            return View(courses.ToList());
+            int pageNumber = (page ?? 1);
+            /*  int pageNumber = 1;
+                if (page!=null)
+                {
+                    pageNumber = page;
+                } */
+            int pageSize = 3;
+
+            return View(courses.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Course/Details/5

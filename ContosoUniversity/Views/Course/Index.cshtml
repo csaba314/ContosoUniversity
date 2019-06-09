@@ -1,21 +1,22 @@
-﻿@model IEnumerable<ContosoUniversity.Models.Course>
+﻿@model PagedList.IPagedList<ContosoUniversity.Models.Course>
+@using PagedList.Mvc;
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Courses";
 }
 
-<h2>Index</h2>
+<h2>@ViewBag.Title</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", "Course", new { @class = "btn btn-primary" })
 </p>
 
 @using (Html.BeginForm("Index", "Course", FormMethod.Get))
 {
     <p>
         Search by Title:
-        @Html.TextBox("SearchString")
-        <input type="submit" value="Search"/>
+        @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
     </p>
 }
 
@@ -24,10 +25,14 @@
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Course Title", "Index", new { sortOrder = ViewBag.TitleSort })
+            @Html.ActionLink("Course Title", "Index", new { sortOrder = ViewBag.TitleSort,
+           currentFilter = ViewBag.CurrentFilter
+       })
         </th>
         <th>
-            @Html.ActionLink("Credits", "Index", new { sortOrder = ViewBag.GradeSort })
+            @Html.ActionLink("Credits", "Index", new { sortOrder = ViewBag.GradeSort,
+           currentFilter = ViewBag.CurrentFilter
+       })
         </th>
         <th></th>
     </tr>
@@ -50,3 +55,11 @@
     }
 
 </table>
+
+Page @( Model.PageCount < Model.PageNumber ? 1 : Model.PageNumber ) of @Model.PageCount
+
+@Html.PagedListPager(Model,
+    page => Url.Action("Index",
+    new { page,
+        sortOrder = ViewBag.CurrentSort,
+        currentFilter = ViewBag.CurrentFilter}))
