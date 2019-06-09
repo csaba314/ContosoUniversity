@@ -16,9 +16,31 @@ namespace ContosoUniversity.Controllers
         private SchoolContext db = new SchoolContext();
 
         // GET: Course
-        public ActionResult Index()
+        public ActionResult Index(string sortOrder)
         {
-            return View(db.Courses.ToList());
+            ViewBag.TitleSort = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewBag.GradeSort = sortOrder == "Credits" ? "credits_desc" : "Credits";
+
+            var courses = from c in db.Courses
+                          select c;
+
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    courses = courses.OrderByDescending(c => c.Title);
+                    break;
+                case "Credits":
+                    courses = courses.OrderBy(c => c.Credits);
+                    break;
+                case "credits_desc":
+                    courses = courses.OrderByDescending(c => c.Credits);
+                    break;
+                default:
+                    courses = courses.OrderBy(c => c.Title);
+                    break;
+            }
+
+            return View(courses.ToList());
         }
 
         // GET: Course/Details/5
