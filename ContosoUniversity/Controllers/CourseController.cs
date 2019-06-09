@@ -43,17 +43,24 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Course/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,Title,Credits")] Course course)
         {
-            if (ModelState.IsValid)
+
+            try
             {
-                db.Courses.Add(course);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Courses.Add(course);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (DataException)
+            {
+
+                ModelState.AddModelError("", "Unable to save changes, please try again.");
             }
 
             return View(course);
@@ -75,19 +82,31 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Course/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Title,Credits")] Course course)
+        public ActionResult EditPost(int? id)
         {
-            if (ModelState.IsValid)
+            if (id == null)
             {
-                db.Entry(course).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            return View(course);
+
+            var courseToUpdate = db.Courses.Find(id);
+
+            if (TryUpdateModel(courseToUpdate,"", new string[] { "ID", "Title", "Credits" }))
+            {
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index", "Course");
+                }
+                catch (DataException)
+                {
+                    ModelState.AddModelError("", "Unable to save changes, please try again.");
+                }
+            }
+
+            return View(courseToUpdate);
         }
 
         // GET: Course/Delete/5
