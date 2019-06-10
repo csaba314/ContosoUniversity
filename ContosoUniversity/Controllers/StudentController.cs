@@ -10,6 +10,9 @@ using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
 using PagedList;
 
+// using statement to enable execution strategy from the derived DbConfiguration class
+using System.Data.Entity.Infrastructure;
+
 namespace ContosoUniversity.Controllers
 {
     public class StudentController : Controller
@@ -110,7 +113,7 @@ namespace ContosoUniversity.Controllers
                     return RedirectToAction("Index");
                 }
             }
-            catch (DataException /*dex*/)
+            catch (RetryLimitExceededException)
             {
 
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
@@ -156,7 +159,7 @@ namespace ContosoUniversity.Controllers
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                catch (DataException)
+                catch (RetryLimitExceededException)
                 {
 
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
@@ -200,7 +203,7 @@ namespace ContosoUniversity.Controllers
                 db.Students.Remove(student);
                 db.SaveChanges();
             }
-            catch (DataException)
+            catch (RetryLimitExceededException)
             {
                 return RedirectToAction("Delete", new { id = id, saveChangesError = true });
             }
