@@ -103,7 +103,7 @@ namespace ContosoUniversity.Migrations
                 new Course {ID = 2042, Title = "Literature",     Credits = 4,
                   DepartmentID = departments.Single( s => s.Name == "English").ID,
                   Instructors = new List<Instructor>()
-                },
+                }
             };
             courses.ForEach(s => context.Courses.AddOrUpdate(p => p.ID, s));
             context.SaveChanges();
@@ -118,7 +118,7 @@ namespace ContosoUniversity.Migrations
                     Location = "Gowan 27" },
                 new OfficeAssignment {
                     InstructorID = instructors.Single( i => i.LastName == "Kapoor").ID,
-                    Location = "Thompson 304" },
+                    Location = "Thompson 304" }
             };
             officeAssignments.ForEach(s => context.OfficeAssignments.AddOrUpdate(p => p.InstructorID, s));
             context.SaveChanges();
@@ -209,10 +209,17 @@ namespace ContosoUniversity.Migrations
 
         void AddOrUpdateInstructor(SchoolContext context, string courseTitle, string instructorName)
         {
-            var crs = context.Courses.SingleOrDefault(c => c.Title == courseTitle);
-            var inst = crs.Instructors.SingleOrDefault(i => i.LastName == instructorName);
-            if (inst == null)
-                crs.Instructors.Add(context.Instructors.Single(i => i.LastName == instructorName));
+            //var crs = context.Courses.SingleOrDefault(c => c.Title == courseTitle);
+            //var inst = crs.Instructors.SingleOrDefault(i => i.LastName == instructorName);
+            //if (inst == null)
+            //    crs.Instructors.Add(context.Instructors.Single(i => i.LastName == instructorName));
+            var course = context.Courses.SingleOrDefault(c => c.Title == courseTitle);
+            var instructor = course.Instructors.SingleOrDefault(i => i.LastName == instructorName);
+
+            if (instructor == null)
+            {
+                course.Instructors.Add(context.Instructors.Single(i => i.LastName == instructorName));
+            }
         }
     }
 }

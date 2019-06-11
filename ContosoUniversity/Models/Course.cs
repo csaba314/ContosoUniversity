@@ -26,6 +26,6 @@ namespace ContosoUniversity.Models
         public virtual Department Department { get; set; }
 
         public virtual ICollection<Enrollment> Enrollments { get; set; }
-        public ICollection<Instructor> Instructors { get; set; }
+        public virtual ICollection<Instructor> Instructors { get; set; }
     }
 }
