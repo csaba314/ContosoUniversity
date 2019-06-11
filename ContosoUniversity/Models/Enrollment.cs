@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
 
 namespace ContosoUniversity.Models
 {
@@ -19,6 +20,7 @@ namespace ContosoUniversity.Models
 
         public int StudentID { get; set; }
 
+        [DisplayFormat(NullDisplayText ="No grade")] // if the property is null, it will display the string in NullDisplayText attribute property
         public Grade? Grade { get; set; }
 
 
