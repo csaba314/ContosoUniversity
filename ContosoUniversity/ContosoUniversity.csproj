@@ -153,9 +153,14 @@
     <Compile Include="Migrations\201906110706061_MaxLengthOnStudentNames.Designer.cs">
       <DependentUpon>201906110706061_MaxLengthOnStudentNames.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906110852573_StudentRequiredAttr.cs" />
+    <Compile Include="Migrations\201906110852573_StudentRequiredAttr.Designer.cs">
+      <DependentUpon>201906110852573_StudentRequiredAttr.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\Enrollment.cs" />
+    <Compile Include="Models\Instructor.cs" />
     <Compile Include="Models\Student.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\EnrollmentDateGroup.cs" />
@@ -231,6 +236,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906110706061_MaxLengthOnStudentNames.resx">
       <DependentUpon>201906110706061_MaxLengthOnStudentNames.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906110852573_StudentRequiredAttr.resx">
+      <DependentUpon>201906110852573_StudentRequiredAttr.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
