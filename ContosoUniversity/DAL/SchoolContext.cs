@@ -15,6 +15,7 @@ namespace ContosoUniversity.DAL
 
         public SchoolContext() : base("SchoolContext") // passing the name of the connection string to the base constructor
         {                                              // connection string is stored in Web.config
+            //this.Configuration.LazyLoadingEnabled = false; // disables lazy loading for all navigation properties
         }
 
         public DbSet<Student> Students { get; set; }

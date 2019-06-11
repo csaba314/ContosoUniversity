@@ -37,8 +37,10 @@ namespace ContosoUniversity.Controllers
             ViewBag.CurrentFilter = searchString;
 
 
-            var courses = from c in db.Courses
-                          select c;
+            //var courses = from c in db.Courses
+            //              select c;
+
+            var courses = db.Courses.Include(c => c.Department); // eager loading of Department navigation property
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -68,7 +70,7 @@ namespace ContosoUniversity.Controllers
                 {
                     pageNumber = page;
                 } */
-            int pageSize = 3;
+            int pageSize = 5;
 
             return View(courses.ToPagedList(pageNumber, pageSize));
         }

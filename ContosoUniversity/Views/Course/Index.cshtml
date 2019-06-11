@@ -25,6 +25,9 @@
 <table class="table">
     <tr>
         <th>
+            @Html.DisplayNameFor(c => c.FirstOrDefault().ID)
+        </th>
+        <th>
             @Html.ActionLink("Course Title", "Index", new { sortOrder = ViewBag.TitleSort,
            currentFilter = ViewBag.CurrentFilter
        })
@@ -34,17 +37,25 @@
            currentFilter = ViewBag.CurrentFilter
        })
         </th>
-        <th></th>
+        <th>
+            Department
+        </th>
     </tr>
 
     @foreach (var item in Model)
     {
         <tr>
             <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Credits)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Department.Name)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
