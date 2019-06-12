@@ -90,16 +90,19 @@ namespace ContosoUniversity.Controllers
             return View(course);
         }
 
+
         // GET: Course/Create
         public ActionResult Create()
         {
+            PopulateDepartmentsDropDownList();
+
             return View();
         }
 
         // POST: Course/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Title,Credits")] Course course)
+        public ActionResult Create([Bind(Include = "ID, Title, redits, DepartmentID")] Course course)
         {
 
             try
@@ -113,9 +116,10 @@ namespace ContosoUniversity.Controllers
             }
             catch (RetryLimitExceededException)
             {
-
                 ModelState.AddModelError("", "Unable to save changes, please try again.");
             }
+
+            PopulateDepartmentsDropDownList(course.DepartmentID);
 
             return View(course);
         }
@@ -128,10 +132,14 @@ namespace ContosoUniversity.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Course course = db.Courses.Find(id);
+
             if (course == null)
             {
                 return HttpNotFound();
             }
+
+            PopulateDepartmentsDropDownList(course.DepartmentID);
+
             return View(course);
         }
 
@@ -147,7 +155,7 @@ namespace ContosoUniversity.Controllers
 
             var courseToUpdate = db.Courses.Find(id);
 
-            if (TryUpdateModel(courseToUpdate, "", new string[] { "ID", "Title", "Credits" }))
+            if (TryUpdateModel(courseToUpdate, "", new string[] { "Title", "Credits", "DepartmentID"}))
             {
                 try
                 {
@@ -160,8 +168,23 @@ namespace ContosoUniversity.Controllers
                 }
             }
 
+            PopulateDepartmentsDropDownList(courseToUpdate.DepartmentID);
+
             return View(courseToUpdate);
         }
+
+
+        private void PopulateDepartmentsDropDownList(object selectedDepartment = null)
+        {
+            var departmentsQuery = from d in db.Departments
+                                   orderby d.Name
+                                   select d;
+            ViewBag.DepartmentID = new SelectList(departmentsQuery, // list of items used to build the dropdown
+                                                "ID", // dataValueField - used to match the value property of the corresponding item
+                                                "Name", // dataTextField - used to match the text property of the corresponding item
+                                                selectedDepartment); // selected value in the list
+        }
+
 
         // GET: Course/Delete/5
         public ActionResult Delete(int? id, bool? saveChangesError = false)
