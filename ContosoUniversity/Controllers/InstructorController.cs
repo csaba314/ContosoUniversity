@@ -78,15 +78,32 @@ namespace ContosoUniversity.Controllers
         // GET: Instructor/Create
         public ActionResult Create()
         {
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location");
+            var instructor = new Instructor();
+            instructor.Courses = new List<Course>();
+            PopulateAssignedCourseData(instructor);
+
             return View();
         }
 
         // POST: Instructor/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,LastName,FirstName,HireDate")] Instructor instructor)
+        public ActionResult Create([Bind(Include = "LastName,FirstName,HireDate,OfficeAssignment")] Instructor instructor, string[] selectedCourses)
         {
+
+            if (selectedCourses != null)
+            {
+                instructor.Courses = new List<Course>();
+
+                foreach (var course in selectedCourses)
+                {
+                    var courseToAdd = db.Courses.Find(int.Parse(course));
+                    instructor.Courses.Add(courseToAdd);
+                }
+            }
+
+
+
             if (ModelState.IsValid)
             {
                 db.Instructors.Add(instructor);
@@ -94,7 +111,7 @@ namespace ContosoUniversity.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            PopulateAssignedCourseData(instructor);
             return View(instructor);
         }
 
@@ -106,9 +123,9 @@ namespace ContosoUniversity.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             //Instructor instructor = db.Instructors.Find(id); // lazy loading
-            
+
             // eager loading of OfficeAssignment
-            Instructor instructor = db.Instructors 
+            Instructor instructor = db.Instructors
                 .Include(i => i.OfficeAssignment)
                 .Include(i => i.Courses)
                 .Where(i => i.ID == id)
@@ -124,12 +141,12 @@ namespace ContosoUniversity.Controllers
             return View(instructor);
         }
 
-        
+
 
         // POST: Instructor/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int? id,string[] selectedCourses)
+        public ActionResult Edit(int? id, string[] selectedCourses)
         {
             if (id == null)
             {
@@ -143,7 +160,7 @@ namespace ContosoUniversity.Controllers
                 .Single();
 
             if (TryUpdateModel(instructorToUpdate, "",
-                new string [] {"LastName", "FirstName", "HireDate", "OfficeAssignment" } ))
+                new string[] { "LastName", "FirstName", "HireDate", "OfficeAssignment" }))
             {
                 try
                 {
@@ -160,7 +177,7 @@ namespace ContosoUniversity.Controllers
                 }
                 catch (RetryLimitExceededException)
                 {
-                    ModelState.AddModelError("", "Unable to save changes. Try again.");   
+                    ModelState.AddModelError("", "Unable to save changes. Try again.");
                 }
             }
 
@@ -168,7 +185,7 @@ namespace ContosoUniversity.Controllers
             return View(instructorToUpdate);
         }
 
-        
+
 
         // GET: Instructor/Delete/5
         public ActionResult Delete(int? id)
@@ -191,8 +208,22 @@ namespace ContosoUniversity.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Instructor instructor = db.Instructors.Find(id);
+            Instructor instructor = db.Instructors
+                .Include(i => i.OfficeAssignment)
+                .Where(i => i.ID == id)
+                .Single();
+
             db.Instructors.Remove(instructor);
+
+            var department = db.Departments
+                .Where(d => d.InstructorID == id)
+                .SingleOrDefault();
+
+            if (department != null) // if department has a instructor assigned
+            {
+                department.InstructorID = null; // set a department instructor as null, before removing the instructor from db
+            }
+
             db.SaveChanges();
             return RedirectToAction("Index");
         }
