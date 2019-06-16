@@ -18,6 +18,7 @@ namespace ContosoUniversity.Models
         [Column(TypeName = "money")] // Column attribute is used to change SQL data type mapping so it will be defined using the SQL Server money type in the db
         public decimal Budget { get; set; }
 
+        [Display(Name ="Start Date")]
         public DateTime StartDate { get; set; }
 
         public int? InstructorID { get; set; }
