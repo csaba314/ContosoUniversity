@@ -23,6 +23,9 @@ namespace ContosoUniversity.Models
 
         public int? InstructorID { get; set; }
 
+        [Timestamp] // Timestamp attribute specifies that this column will be included in the Where clause of Update and Delete commands sent to the db
+        public byte[] RowVersion { get; set; }
+
         public virtual Instructor Administrator { get; set; }
         public ICollection<Course> Courses { get; set; }
 
