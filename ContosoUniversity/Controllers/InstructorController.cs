@@ -83,8 +83,6 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Instructor/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,LastName,FirstName,HireDate")] Instructor instructor)
@@ -112,8 +110,11 @@ namespace ContosoUniversity.Controllers
             // eager loading of OfficeAssignment
             Instructor instructor = db.Instructors 
                 .Include(i => i.OfficeAssignment)
+                .Include(i => i.Courses)
                 .Where(i => i.ID == id)
                 .Single();
+
+            PopulateAssignedCourseData(instructor);
 
             if (instructor == null)
             {
@@ -123,13 +124,12 @@ namespace ContosoUniversity.Controllers
             return View(instructor);
         }
 
+        
+
         // POST: Instructor/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ActionName("Edit")]
-        public ActionResult EditPost(int? id)
+        public ActionResult Edit(int? id,string[] selectedCourses)
         {
             if (id == null)
             {
@@ -138,6 +138,7 @@ namespace ContosoUniversity.Controllers
 
             var instructorToUpdate = db.Instructors
                 .Include(i => i.OfficeAssignment)
+                .Include(i => i.Courses)
                 .Where(i => i.ID == id)
                 .Single();
 
@@ -151,6 +152,8 @@ namespace ContosoUniversity.Controllers
                         instructorToUpdate.OfficeAssignment = null;
                     }
 
+                    UpdateInstructorCourses(selectedCourses, instructorToUpdate);
+
                     db.SaveChanges();
                     return RedirectToAction("Index");
 
@@ -161,8 +164,11 @@ namespace ContosoUniversity.Controllers
                 }
             }
 
+            PopulateAssignedCourseData(instructorToUpdate);
             return View(instructorToUpdate);
         }
+
+        
 
         // GET: Instructor/Delete/5
         public ActionResult Delete(int? id)
@@ -180,7 +186,8 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Instructor/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
+        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -197,6 +204,57 @@ namespace ContosoUniversity.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+
+        private void PopulateAssignedCourseData(Instructor instructor)
+        {
+            var allCourses = db.Courses;
+            var instructorCourses = new HashSet<int>(instructor.Courses.Select(c => c.ID));
+
+            var viewModel = new List<AssignedCourseData>();
+
+            foreach (var course in allCourses)
+            {
+                viewModel.Add(new AssignedCourseData
+                {
+                    CourseID = course.ID,
+                    Title = course.Title,
+                    Assigned = instructorCourses.Contains(course.ID)
+                });
+            }
+
+            ViewBag.Courses = viewModel;
+        }
+
+        private void UpdateInstructorCourses(string[] selectedCourses, Instructor instructorToUpdate)
+        {
+            if (selectedCourses == null) // if no check boxes were selected, Course navigation prop is initialized to an empty list
+            {
+                instructorToUpdate.Courses = new List<Course>();
+                return;
+            }
+
+            var selectedCoursesHS = new HashSet<string>(selectedCourses); // hashSet of check box selection of courses from the view
+            var instructorCourses = new HashSet<int>(instructorToUpdate.Courses.Select(c => c.ID)); // hashSet of course IDs from the navigation property
+
+            foreach (var course in db.Courses)
+            {
+                if (selectedCoursesHS.Contains(course.ID.ToString())) // if the course was selected in the view
+                {
+                    if (!instructorCourses.Contains(course.ID)) // if the course is not in the instructor.Courses navigation property
+                    {                                           // the course is added to the collection in the navigation property
+                        instructorToUpdate.Courses.Add(course);
+                    }
+                }
+                else // if the course is not selected int the view (deselected)
+                {
+                    if (instructorCourses.Contains(course.ID)) // but the course is in the Instructor.Course nav prop
+                    {                                          // the course is removed from the collection in the navigation property
+                        instructorToUpdate.Courses.Remove(course);
+                    }
+                }
+            }
         }
     }
 }
