@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
@@ -20,7 +17,7 @@ namespace ContosoUniversity.Controllers
         private SchoolContext db = new SchoolContext();
 
         // GET: Student
-        public ActionResult Index(string sortOrder,string currentFilter, string searchString, int? page)
+        public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -30,7 +27,8 @@ namespace ContosoUniversity.Controllers
             if (searchString != null)
             {
                 page = 1;
-            } else
+            }
+            else
             {
                 searchString = currentFilter;
             }
@@ -149,8 +147,8 @@ namespace ContosoUniversity.Controllers
 
             var StudentToUpdate = db.Students.Find(id);
 
-            if (TryUpdateModel(StudentToUpdate, 
-                "", 
+            if (TryUpdateModel(StudentToUpdate,
+                "",
                 // string array of whitelisted fields to be updated by the EditPost action
                 new string[] { "LastName, FirstName", "EnrollmentDate" }))
             {
@@ -171,7 +169,7 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Student/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError=false)
+        public ActionResult Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {

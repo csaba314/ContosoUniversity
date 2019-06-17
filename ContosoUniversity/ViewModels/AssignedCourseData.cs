@@ -1,5 +1,4 @@
-﻿
-namespace ContosoUniversity.ViewModels
+﻿namespace ContosoUniversity.ViewModels
 {
     public class AssignedCourseData
     {

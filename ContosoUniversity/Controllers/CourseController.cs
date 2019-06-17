@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
@@ -155,7 +153,7 @@ namespace ContosoUniversity.Controllers
 
             var courseToUpdate = db.Courses.Find(id);
 
-            if (TryUpdateModel(courseToUpdate, "", new string[] { "Title", "Credits", "DepartmentID"}))
+            if (TryUpdateModel(courseToUpdate, "", new string[] { "Title", "Credits", "DepartmentID" }))
             {
                 try
                 {
